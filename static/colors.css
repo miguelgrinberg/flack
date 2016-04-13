@@ -1,0 +1,120 @@
+.color0 { font-weight: bold; color: #e2a2bf; } /* Lavender */
+.color1 { font-weight: bold; color: #878a99; } /* Manatee */
+.color2 { font-weight: bold; color: #d7b8a5; } /* Desert Sand */
+.color3 { font-weight: bold; color: #e2d075; } /* Yellow */
+.color4 { font-weight: bold; color: #cf97c1; } /* Orchid */
+.color5 { font-weight: bold; color: #e540bb; } /* Razzle Dazzle Rose */
+.color6 { font-weight: bold; color: #1b69e4; } /* Blue */
+.color7 { font-weight: bold; color: #e3544a; } /* Sunset Orange */
+.color8 { font-weight: bold; color: #919bbb; } /* Wild Blue Yonder */
+.color9 { font-weight: bold; color: #e5a9c3; } /* Cotton Candy */
+.color10 { font-weight: bold; color: #e2243f; } /* Scarlet */
+.color11 { font-weight: bold; color: #b88669; } /* Antique Brass */
+.color12 { font-weight: bold; color: #1f1f1f; } /* Black */
+.color13 { font-weight: bold; color: #e56932; } /* Orange */
+.color14 { font-weight: bold; color: #de7390; } /* Pink Sherbet */
+.color15 { font-weight: bold; color: #6c4898; } /* Royal Purple */
+.color16 { font-weight: bold; color: #7f3e77; } /* Plum */
+.color17 { font-weight: bold; color: #e56342; } /* Outrageous Orange */
+.color18 { font-weight: bold; color: #cfb287; } /* Gold */
+.color19 { font-weight: bold; color: #8d74a7; } /* Purple Mountains’ Majesty */
+.color20 { font-weight: bold; color: #e3e268; } /* Laser Lemon */
+.color21 { font-weight: bold; color: #e171e3; } /* Shocking Pink */
+.color22 { font-weight: bold; color: #e1cfa2; } /* Banana Mania */
+.color23 { font-weight: bold; color: #97cd90; } /* Granny Smith Apple */
+.color24 { font-weight: bold; color: #1668bd; } /* Navy Blue */
+.color25 { font-weight: bold; color: #d61c45; } /* Red */
+.color26 { font-weight: bold; color: #6bc6cf; } /* Turquoise Blue */
+.color27 { font-weight: bold; color: #e5aa7a; } /* Macaroni and Cheese */
+.color28 { font-weight: bold; color: #e36f63; } /* Bittersweet */
+.color29 { font-weight: bold; color: #e5ba40; } /* Sunglow */
+.color30 { font-weight: bold; color: #b63a4b; } /* Brick Red */
+.color31 { font-weight: bold; color: #8fcbab; } /* Sea Green */
+.color32 { font-weight: bold; color: #17406a; } /* Midnight Blue */
+.color33 { font-weight: bold; color: #3a4244; } /* Outer Space */
+.color34 { font-weight: bold; color: #c07c50; } /* Raw Sienna */
+.color35 { font-weight: bold; color: #b5315c; } /* Jazzberry Jam */
+.color36 { font-weight: bold; color: #683bb4; } /* Purple Heart */
+.color37 { font-weight: bold; color: #a9534f; } /* Chestnut */
+.color38 { font-weight: bold; color: #147362; } /* Tropical Rain Forest */
+.color39 { font-weight: bold; color: #e2c369; } /* Goldenrod */
+.color40 { font-weight: bold; color: #e27b9a; } /* Tickle Me Pink */
+.color41 { font-weight: bold; color: #7c6c53; } /* Shadow */
+.color42 { font-weight: bold; color: #359e80; } /* Jungle Green */
+.color43 { font-weight: bold; color: #c5c1bd; } /* Timberwolf */
+.color44 { font-weight: bold; color: #2661b0; } /* Denim */
+.color45 { font-weight: bold; color: #e57241; } /* Burnt Orange */
+.color46 { font-weight: bold; color: #1a9ac0; } /* Cerulean */
+.color47 { font-weight: bold; color: #2ba780; } /* Mountain Meadow */
+.color48 { font-weight: bold; color: #e54161; } /* Radical Red */
+.color49 { font-weight: bold; color: #e51ab9; } /* Purple Pizzazz */
+.color50 { font-weight: bold; color: #e3c1cd; } /* Piggy Pink */
+.color51 { font-weight: bold; color: #675baa; } /* Blue Violet */
+.color52 { font-weight: bold; color: #536ab6; } /* Indigo */
+.color53 { font-weight: bold; color: #3eb991; } /* Shamrock */
+.color54 { font-weight: bold; color: #b84242; } /* Mahogany */
+.color55 { font-weight: bold; color: #199a6c; } /* Green */
+.color56 { font-weight: bold; color: #e26177; } /* Wild Watermelon */
+.color57 { font-weight: bold; color: #d8d082; } /* Green Yellow */
+.color58 { font-weight: bold; color: #e5923c; } /* Neon Carrot */
+.color59 { font-weight: bold; color: #65a96c; } /* Fern */
+.color60 { font-weight: bold; color: #634856; } /* Eggplant */
+.color61 { font-weight: bold; color: #e59368; } /* Atomic Tangerine */
+.color62 { font-weight: bold; color: #799860; } /* Asparagus */
+.color63 { font-weight: bold; color: #6ae56d; } /* Screamin Green */
+.color64 { font-weight: bold; color: #e599b7; } /* Carnation Pink */
+.color65 { font-weight: bold; color: #945e47; } /* Sepia */
+.color66 { font-weight: bold; color: #e5907b; } /* Vivid Tangerine */
+.color67 { font-weight: bold; color: #e3e268; } /* Unmellow Yellow */
+.color68 { font-weight: bold; color: #e5e589; } /* Canary */
+.color69 { font-weight: bold; color: #e5a34a; } /* Yellow Orange */
+.color70 { font-weight: bold; color: #9b9bc0; } /* Blue Bell */
+.color71 { font-weight: bold; color: #168eaa; } /* Blue Green */
+.color72 { font-weight: bold; color: #a25c45; } /* Brown */
+.color73 { font-weight: bold; color: #629c74; } /* Forest Green */
+.color74 { font-weight: bold; color: #80488d; } /* Vivid Violet */
+.color75 { font-weight: bold; color: #8f7464; } /* Beaver */
+.color76 { font-weight: bold; color: #1ae012; } /* Electric Lime */
+.color77 { font-weight: bold; color: #b1bbcf; } /* Periwinkle */
+.color78 { font-weight: bold; color: #dd5a9d; } /* Magenta */
+.color79 { font-weight: bold; color: #e268e3; } /* Pink Flamingo */
+.color80 { font-weight: bold; color: #ac3d80; } /* Red Violet */
+.color81 { font-weight: bold; color: #19bd91; } /* Caribbean Green */
+.color82 { font-weight: bold; color: #e3c3a2; } /* Apricot */
+.color83 { font-weight: bold; color: #af5ab1; } /* Fuchsia */
+.color84 { font-weight: bold; color: #d4d2ab; } /* Spring Green */
+.color85 { font-weight: bold; color: #e54a41; } /* Red Orange */
+.color86 { font-weight: bold; color: #d7c5b1; } /* Almond */
+.color87 { font-weight: bold; color: #c68569; } /* Copper */
+.color88 { font-weight: bold; color: #e5ba99; } /* Peach */
+.color89 { font-weight: bold; color: #e53c93; } /* Wild Strawberry */
+.color90 { font-weight: bold; color: #d78899; } /* Mauvelous */
+.color91 { font-weight: bold; color: #73c4d3; } /* Sky Blue */
+.color92 { font-weight: bold; color: #b893c7; } /* Wisteria */
+.color93 { font-weight: bold; color: #cc2160; } /* Razzmatazz */
+.color94 { font-weight: bold; color: #e58b99; } /* Salmon */
+.color95 { font-weight: bold; color: #e3a9a2; } /* Melon */
+.color96 { font-weight: bold; color: #b8b1ae; } /* Silver */
+.color97 { font-weight: bold; color: #12736c; } /* Pine Green */
+.color98 { font-weight: bold; color: #a7a561; } /* Olive Green */
+.color99 { font-weight: bold; color: #86827e; } /* Gray */
+.color100 { font-weight: bold; color: #83639c; } /* Violet (Purple) */
+.color101 { font-weight: bold; color: #b75b5b; } /* Fuzzy Wuzzy Brown */
+.color102 { font-weight: bold; color: #1998b4; } /* Pacific Blue */
+.color103 { font-weight: bold; color: #e19661; } /* Tan */
+.color104 { font-weight: bold; color: #b1cc76; } /* Yellow Green */
+.color105 { font-weight: bold; color: #d5d5d5; } /* White */
+.color106 { font-weight: bold; color: #de4a85; } /* Violet Red */
+.color107 { font-weight: bold; color: #8ab9d3; } /* Cornflower */
+.color108 { font-weight: bold; color: #a0d453; } /* Inch Worm */
+.color109 { font-weight: bold; color: #c75375; } /* Blush */
+.color110 { font-weight: bold; color: #1bb9b6; } /* Robin Egg Blue */
+.color111 { font-weight: bold; color: #9ea4b2; } /* Cadet Blue */
+.color112 { font-weight: bold; color: #e3c562; } /* Dandelion */
+.color113 { font-weight: bold; color: #c63d83; } /* Cerise */
+.color114 { font-weight: bold; color: #6cc5cb; } /* Aquamarine */
+.color115 { font-weight: bold; color: #c7997a; } /* Tumbleweed */
+.color116 { font-weight: bold; color: #d27153; } /* Burnt Sienna */
+.color117 { font-weight: bold; color: #e5753c; } /* Mango Tango */
+.color118 { font-weight: bold; color: #b43251; } /* Maroon */
+.color119 { font-weight: bold; color: #e51ab9; } /* Hot Magenta */
