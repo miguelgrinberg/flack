@@ -4,7 +4,6 @@ import time
 
 from flask import Flask, render_template, request, abort, jsonify, g
 from flask_sqlalchemy import SQLAlchemy
-from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_bootstrap import Bootstrap
 
 from .utils import timestamp, url_for
@@ -21,71 +20,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 Bootstrap(app)
 
-# Authentication objects for username/password auth, token auth, and a
-# token optional auth that is used for open endpoints.
-basic_auth = HTTPBasicAuth()
-token_auth = HTTPTokenAuth('Bearer')
-token_optional_auth = HTTPTokenAuth('Bearer')
-
 # We use a list to calculate requests per second
 request_stats = []
 
 # Import models so that they are registered with SQLAlchemy
 from .models import User, Message
 
-
-@basic_auth.verify_password
-def verify_password(nickname, password):
-    """Password verification callback."""
-    if not nickname or not password:
-        return False
-    user = User.query.filter_by(nickname=nickname).first()
-    if user is None or not user.verify_password(password):
-        return False
-    user.ping()
-    db.session.add(user)
-    db.session.commit()
-    g.current_user = user
-    return True
-
-
-@basic_auth.error_handler
-def password_error():
-    """Return a 401 error to the client."""
-    # To avoid login prompts in the browser, use the "Bearer" realm.
-    return (jsonify({'error': 'authentication required'}), 401,
-            {'WWW-Authenticate': 'Bearer realm="Authentication Required"'})
-
-
-@token_auth.verify_token
-def verify_token(token):
-    """Token verification callback."""
-    user = User.query.filter_by(token=token).first()
-    if user is None:
-        return False
-    user.ping()
-    db.session.add(user)
-    db.session.commit()
-    g.current_user = user
-    return True
-
-
-@token_auth.error_handler
-def token_error():
-    """Return a 401 error to the client."""
-    return (jsonify({'error': 'authentication required'}), 401,
-            {'WWW-Authenticate': 'Bearer realm="Authentication Required"'})
-
-
-@token_optional_auth.verify_token
-def verify_optional_token(token):
-    """Alternative token authentication that allows anonymous logins."""
-    if token == '':
-        # no token provided, mark the logged in users as None and continue
-        g.current_user = None
-        return True
-    # but if a token was provided, make sure it is valid
-    return verify_token(token)
+# Import authentication handlers
+from .auth import basic_auth, token_auth, token_optional_auth
 
 
 @app.before_first_request
