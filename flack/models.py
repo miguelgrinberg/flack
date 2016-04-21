@@ -73,9 +73,9 @@ class User(db.Model):
             'last_seen_at': self.last_seen_at,
             'online': self.online,
             '_links': {
-                'self': url_for('get_user', id=self.id),
-                'messages': url_for('get_messages', user_id=self.id),
-                'tokens': url_for('new_token')
+                'self': url_for('api.get_user', id=self.id),
+                'messages': url_for('api.get_messages', user_id=self.id),
+                'tokens': url_for('api.new_token')
             }
         }
 
@@ -128,8 +128,8 @@ class Message(db.Model):
             'html': self.html,
             'user_id': self.user.id,
             '_links': {
-                'self': url_for('get_message', id=self.id),
-                'user': url_for('get_user', id=self.user.id)
+                'self': url_for('api.get_message', id=self.id),
+                'user': url_for('api.get_user', id=self.user.id)
             }
         }
 
