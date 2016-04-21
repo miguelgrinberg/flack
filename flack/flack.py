@@ -7,7 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 
 from config import config
-from .utils import timestamp
 
 app = Flask(__name__)
 app.config.from_object(config[os.environ.get('FLACK_CONFIG', 'development')])
@@ -16,15 +15,15 @@ app.config.from_object(config[os.environ.get('FLACK_CONFIG', 'development')])
 db = SQLAlchemy(app)
 Bootstrap(app)
 
-# We use a list to calculate requests per second
-request_stats = []
-
 # Import models so that they are registered with SQLAlchemy
 from .models import User, Message  # noqa
 
 # Registed API routes with the application
 from .api import api as api_blueprint
 app.register_blueprint(api_blueprint, url_prefix='/api')
+
+# Import stats supporting functions
+from . import stats
 
 
 @app.before_first_request
@@ -44,10 +43,7 @@ def before_first_request():
 @app.before_request
 def before_request():
     """Update requests per second stats."""
-    t = timestamp()
-    while len(request_stats) > 0 and request_stats[0] < t - 15:
-        del request_stats[0]
-    request_stats.append(t)
+    stats.add_request()
 
 
 @app.route('/')
@@ -58,4 +54,4 @@ def index():
 
 @app.route('/stats', methods=['GET'])
 def get_stats():
-    return jsonify({'requests_per_second': len(request_stats) / 15})
+    return jsonify({'requests_per_second': stats.requests_per_second()})
