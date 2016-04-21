@@ -1,20 +1,11 @@
-#!/usr/bin/env python
 import base64
-import coverage
 import json
-import os
-import subprocess
-import sys
 import time
 import unittest
 import mock
 
 import requests
 
-cov = coverage.Coverage(branch=True)
-cov.start()
-
-os.environ['DATABASE_URL'] = 'sqlite://'
 from flack.flack import app, db, User
 app.config['TESTING'] = True
 
@@ -384,20 +375,3 @@ class FlackTests(unittest.TestCase):
                 r['html'],
                 'hello <a href="http://foo.com" rel="nofollow">'
                 'foo.com</a>!')
-
-
-if __name__ == '__main__':
-    tests_ok = unittest.main(verbosity=2, exit=False).result.wasSuccessful()
-
-    # print coverage report
-    cov.stop()
-    print('')
-    cov.report(omit=['tests.py', 'venv/*'])
-
-    # lint the code
-    print('')
-    lint_ok = subprocess.call(['flake8', '--ignore=E402', 'flack/',
-                               'manage.py', 'tests.py']) == 0
-
-    # exit code (1: tests failed, 2: lint failed, 3: both failed)
-    sys.exit((0 if tests_ok else 1) + (0 if lint_ok else 2))
