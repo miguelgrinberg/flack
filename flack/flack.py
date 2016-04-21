@@ -6,15 +6,11 @@ from flask import Flask, render_template, request, abort, jsonify, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 
+from config import config
 from .utils import timestamp, url_for
 
-basedir = os.path.abspath(os.path.dirname(__file__) + '/..')
-
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '51f52814-0071-11e6-a247-000ec6c2372c'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL', 'sqlite:///' + os.path.join(basedir, 'db.sqlite'))
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_object(config[os.environ.get('FLACK_CONFIG', 'development')])
 
 # Flask extensions
 db = SQLAlchemy(app)

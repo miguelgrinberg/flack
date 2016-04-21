@@ -7,7 +7,6 @@ import mock
 import requests
 
 from flack.flack import app, db, User
-app.config['TESTING'] = True
 
 
 class FlackTests(unittest.TestCase):

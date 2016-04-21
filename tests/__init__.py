@@ -6,7 +6,7 @@ import coverage
 
 
 def run():
-    os.environ['DATABASE_URL'] = 'sqlite://'
+    os.environ['FLACK_CONFIG'] = 'testing'
 
     # start coverage engine
     cov = coverage.Coverage(branch=True)
