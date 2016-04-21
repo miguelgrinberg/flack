@@ -4,8 +4,7 @@ import os
 import threading
 import time
 
-from flask import Flask, render_template, url_for as _url_for, request, \
-    _request_ctx_stack, current_app, abort, jsonify, g
+from flask import Flask, render_template, request, abort, jsonify, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_bootstrap import Bootstrap
@@ -15,6 +14,7 @@ import bleach
 from bs4 import BeautifulSoup
 import requests
 
+from utils import timestamp, url_for
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -36,27 +36,6 @@ token_optional_auth = HTTPTokenAuth('Bearer')
 
 # We use a list to calculate requests per second
 request_stats = []
-
-
-def timestamp():
-    """Return the current timestamp as an integer."""
-    return int(time.time())
-
-
-def url_for(*args, **kwargs):
-    """
-    url_for replacement that works even when there is no request context.
-    """
-    if '_external' not in kwargs:
-        kwargs['_external'] = False
-    reqctx = _request_ctx_stack.top
-    if reqctx is None:
-        if kwargs['_external']:
-            raise RuntimeError('Cannot generate external URLs without a '
-                               'request context.')
-        with current_app.test_request_context():
-            return _url_for(*args, **kwargs)
-    return _url_for(*args, **kwargs)
 
 
 class User(db.Model):
