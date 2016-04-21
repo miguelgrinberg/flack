@@ -18,10 +18,12 @@ As usual, create a virtual environment and install the requirements with pip.
 
 ## Running
 
-The initial version of this project is in a single module called flack.py. To
-run the application just run that module.
+The application uses Flask-Script to simplify common tasks such as starting
+a development server. To run the application run the following command:
 
-    python flack.py
+    python manage.py runserver
+
+You can add `--help` to see what other start up options are available.
 
 ##  Usage
 

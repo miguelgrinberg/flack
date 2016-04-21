@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os
 import threading
 import time
@@ -8,9 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_bootstrap import Bootstrap
 
-from utils import timestamp, url_for
+from .utils import timestamp, url_for
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__) + '/..')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '51f52814-0071-11e6-a247-000ec6c2372c'
@@ -32,7 +31,7 @@ token_optional_auth = HTTPTokenAuth('Bearer')
 request_stats = []
 
 # Import models so that they are registered with SQLAlchemy
-from models import User, Message
+from .models import User, Message
 
 
 @basic_auth.verify_password
@@ -272,8 +271,3 @@ def edit_message(id):
 @app.route('/stats', methods=['GET'])
 def get_stats():
     return jsonify({'requests_per_second': len(request_stats) / 15})
-
-
-if __name__ == '__main__':
-    db.create_all()
-    app.run(host='0.0.0.0', debug=True)

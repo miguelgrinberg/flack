@@ -8,11 +8,8 @@ import bleach
 from bs4 import BeautifulSoup
 import requests
 
-try:
-    from __main__ import db
-except ImportError:
-    from flack import db
-from utils import timestamp, url_for
+from .flack import db
+from .utils import timestamp, url_for
 
 
 class User(db.Model):

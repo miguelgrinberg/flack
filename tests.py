@@ -15,7 +15,7 @@ cov = coverage.Coverage(branch=True)
 cov.start()
 
 os.environ['DATABASE_URL'] = 'sqlite://'
-from flack import app, db, User
+from flack.flack import app, db, User
 app.config['TESTING'] = True
 
 
@@ -223,7 +223,7 @@ class FlackTests(unittest.TestCase):
 
         # get users updated since a timestamp
         since = r['users'][0]['updated_at']
-        with mock.patch('utils.time.time', return_value=since + 10):
+        with mock.patch('flack.utils.time.time', return_value=since + 10):
             r, s, h = self.get('/api/users?updated_since=' + str(since),
                                token_auth=token)
         self.assertEqual(s, 200)
@@ -237,7 +237,7 @@ class FlackTests(unittest.TestCase):
         db.session.commit()
 
         # get updated users again
-        with mock.patch('utils.time.time', return_value=since + 10):
+        with mock.patch('flack.utils.time.time', return_value=since + 10):
             r, s, h = self.get('/api/users?updated_since=' + str(since - 1),
                                token_auth=token)
         self.assertEqual(s, 200)
@@ -283,7 +283,8 @@ class FlackTests(unittest.TestCase):
         self.assertEqual(r['html'], '<em>hello</em> world!')
 
         # create a new message
-        with mock.patch('utils.time.time', return_value=int(time.time()) + 5):
+        with mock.patch('flack.utils.time.time',
+                        return_value=int(time.time()) + 5):
             r, s, h = self.post('/api/messages',
                                 data={'source': 'bye *world*!'},
                                 token_auth=token)
@@ -340,7 +341,7 @@ class FlackTests(unittest.TestCase):
             yield rv
             yield requests.exceptions.ConnectionError()
 
-        with mock.patch('models.requests.get', side_effect=responses()):
+        with mock.patch('flack.models.requests.get', side_effect=responses()):
             r, s, h = self.post(
                 '/api/messages',
                 data={'source': 'hello http://foo.com!'},
@@ -395,8 +396,8 @@ if __name__ == '__main__':
 
     # lint the code
     print('')
-    lint_ok = subprocess.call(['flake8', '--ignore=E402', 'flack.py',
-                               'models.py', 'utils.py', 'tests.py']) == 0
+    lint_ok = subprocess.call(['flake8', '--ignore=E402', 'flack/',
+                               'manage.py', 'tests.py']) == 0
 
     # exit code (1: tests failed, 2: lint failed, 3: both failed)
     sys.exit((0 if tests_ok else 1) + (0 if lint_ok else 2))
