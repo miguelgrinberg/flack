@@ -1,6 +1,6 @@
 from flask import Blueprint, request, abort, jsonify, g
 
-from .flack import db
+from . import db
 from .auth import basic_auth, token_auth, token_optional_auth
 from .models import User, Message
 from .utils import timestamp, url_for

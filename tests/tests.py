@@ -6,17 +6,22 @@ import mock
 
 import requests
 
-from flack.flack import app, db, User
+from flack import create_app, db
+from flack.models import User
 
 
 class FlackTests(unittest.TestCase):
     def setUp(self):
+        self.app = create_app('testing')
+        self.ctx = self.app.app_context()
+        self.ctx.push()
         db.drop_all()  # just in case
         db.create_all()
-        self.client = app.test_client()
+        self.client = self.app.test_client()
 
     def tearDown(self):
         db.drop_all()
+        self.ctx.pop()
 
     def get_headers(self, basic_auth=None, token_auth=None):
         headers = {

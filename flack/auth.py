@@ -1,7 +1,7 @@
 from flask import g, jsonify
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 
-from .flack import db
+from . import db
 from .models import User
 
 

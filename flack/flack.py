@@ -1,57 +1,42 @@
-import os
 import threading
 import time
 
-from flask import Flask, render_template, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_bootstrap import Bootstrap
+from flask import Blueprint, render_template, jsonify, current_app
 
-from config import config
+from .models import User
+from . import db, stats
 
-app = Flask(__name__)
-app.config.from_object(config[os.environ.get('FLACK_CONFIG', 'development')])
-
-# Flask extensions
-db = SQLAlchemy(app)
-Bootstrap(app)
-
-# Import models so that they are registered with SQLAlchemy
-from .models import User, Message  # noqa
-
-# Registed API routes with the application
-from .api import api as api_blueprint
-app.register_blueprint(api_blueprint, url_prefix='/api')
-
-# Import stats supporting functions
-from . import stats
+main = Blueprint('main', __name__)
 
 
-@app.before_first_request
+@main.before_app_first_request
 def before_first_request():
     """Start a background thread that looks for users that leave."""
-    def find_offline_users():
-        while True:
-            User.find_offline_users()
-            db.session.remove()
-            time.sleep(5)
+    def find_offline_users(app):
+        with app.app_context():
+            while True:
+                User.find_offline_users()
+                db.session.remove()
+                time.sleep(5)
 
-    if not app.config['TESTING']:
-        thread = threading.Thread(target=find_offline_users)
+    if not current_app.config['TESTING']:
+        thread = threading.Thread(target=find_offline_users,
+                                  args=(current_app._get_current_object(),))
         thread.start()
 
 
-@app.before_request
+@main.before_app_request
 def before_request():
     """Update requests per second stats."""
     stats.add_request()
 
 
-@app.route('/')
+@main.route('/')
 def index():
     """Serve client-side application."""
     return render_template('index.html')
 
 
-@app.route('/stats', methods=['GET'])
+@main.route('/stats', methods=['GET'])
 def get_stats():
     return jsonify({'requests_per_second': stats.requests_per_second()})

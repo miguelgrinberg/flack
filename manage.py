@@ -4,9 +4,9 @@ import sys
 
 from flask_script import Manager
 
-from flack import app, db
+from flack import create_app, db
 
-manager = Manager(app)
+manager = Manager(create_app)
 
 
 @manager.command
