@@ -32,4 +32,8 @@ def create_app(config_name=None):
     from .api import api as api_blueprint
     app.register_blueprint(api_blueprint, url_prefix='/api')
 
+    # Register async tasks support
+    from .tasks import tasks_bp as tasks_blueprint
+    app.register_blueprint(tasks_blueprint, url_prefix='/tasks')
+
     return app

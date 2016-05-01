@@ -252,12 +252,28 @@ class FlackTests(unittest.TestCase):
         # create a message
         r, s, h = self.post('/api/messages', data={'source': 'hello *world*!'},
                             token_auth=token)
+        self.assertEqual(s, 202)
+        url = h['Location']
+
+        # wait for asnychronous task to complete
+        while True:
+            r, s, h = self.get(url)
+            if s != 202:
+                break
         self.assertEqual(s, 201)
         url = h['Location']
 
         # create incomplete message
         r, s, h = self.post('/api/messages', data={'foo': 'hello *world*!'},
                             token_auth=token)
+        self.assertEqual(s, 202)
+        url2 = h['Location']
+
+        # wait for asynchronous task to complete
+        while True:
+            r, s, h = self.get(url2)
+            if s != 202:
+                break
         self.assertEqual(s, 400)
 
         # get message
@@ -269,6 +285,14 @@ class FlackTests(unittest.TestCase):
         # modify message
         r, s, h = self.put(url, data={'source': '*hello* world!'},
                            token_auth=token)
+        self.assertEqual(s, 202)
+        url2 = h['Location']
+
+        # wait for asynchronous task to complete
+        while True:
+            r, s, h = self.get(url2)
+            if s != 202:
+                break
         self.assertEqual(s, 204)
 
         # check modified message
@@ -283,6 +307,14 @@ class FlackTests(unittest.TestCase):
             r, s, h = self.post('/api/messages',
                                 data={'source': 'bye *world*!'},
                                 token_auth=token)
+            self.assertEqual(s, 202)
+            url2 = h['Location']
+
+            # wait for asynchronous task to complete
+            while True:
+                r, s, h = self.get(url2)
+                if s != 202:
+                    break
         self.assertEqual(s, 201)
 
         # get list of messages
@@ -311,6 +343,14 @@ class FlackTests(unittest.TestCase):
         # modify message from first user with second user's token
         r, s, h = self.put(url, data={'source': '*hello* world!'},
                            token_auth=token2)
+        self.assertEqual(s, 202)
+        url2 = h['Location']
+
+        # wait for asynchronous task to complete
+        while True:
+            r, s, h = self.get(url2)
+            if s != 202:
+                break
         self.assertEqual(s, 403)
 
         def responses():
@@ -341,7 +381,16 @@ class FlackTests(unittest.TestCase):
                 '/api/messages',
                 data={'source': 'hello http://foo.com!'},
                 token_auth=token)
+            self.assertEqual(s, 202)
+            url2 = h['Location']
+
+            # wait for asynchronous task to complete
+            while True:
+                r, s, h = self.get(url2)
+                if s != 202:
+                    break
             self.assertEqual(s, 201)
+
             self.assertEqual(
                 r['html'],
                 'hello <a href="http://foo.com" rel="nofollow">'
@@ -352,7 +401,16 @@ class FlackTests(unittest.TestCase):
                 '/api/messages',
                 data={'source': 'hello http://foo.com!'},
                 token_auth=token)
+            self.assertEqual(s, 202)
+            url2 = h['Location']
+
+            # wait for asynchronous task to complete
+            while True:
+                r, s, h = self.get(url2)
+                if s != 202:
+                    break
             self.assertEqual(s, 201)
+
             self.assertEqual(
                 r['html'],
                 'hello <a href="http://foo.com" rel="nofollow">'
@@ -363,7 +421,16 @@ class FlackTests(unittest.TestCase):
                 '/api/messages',
                 data={'source': 'hello foo.com!'},
                 token_auth=token)
+            self.assertEqual(s, 202)
+            url2 = h['Location']
+
+            # wait for asynchronous task to complete
+            while True:
+                r, s, h = self.get(url2)
+                if s != 202:
+                    break
             self.assertEqual(s, 201)
+
             self.assertEqual(
                 r['html'],
                 'hello <a href="http://foo.com" rel="nofollow">'
@@ -374,7 +441,16 @@ class FlackTests(unittest.TestCase):
                 '/api/messages',
                 data={'source': 'hello foo.com!'},
                 token_auth=token)
+            self.assertEqual(s, 202)
+            url2 = h['Location']
+
+            # wait for asynchronous task to complete
+            while True:
+                r, s, h = self.get(url2)
+                if s != 202:
+                    break
             self.assertEqual(s, 201)
+
             self.assertEqual(
                 r['html'],
                 'hello <a href="http://foo.com" rel="nofollow">'
