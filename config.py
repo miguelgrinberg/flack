@@ -12,6 +12,7 @@ class Config(object):
         'DATABASE_URL', 'sqlite:///' + os.path.join(basedir, 'db.sqlite'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     REQUEST_STATS_WINDOW = 15
+    CELERY_CONFIG = {}
 
 
 class DevelopmentConfig(Config):
@@ -25,6 +26,7 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    CELERY_CONFIG = {'CELERY_ALWAYS_EAGER': True}
 
 
 config = {

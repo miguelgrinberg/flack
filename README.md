@@ -25,13 +25,29 @@ a development server. To run the application run the following command:
 
 You can add `--help` to see what other start up options are available.
 
+The second component of this application is the Celery workers, which must be
+started with the following command:
+
+    python manage.py celery
+
+If you want to have more verbose output from the workers you can add
+`--loglevel=info` to the command above.
+
+Finally, in addition to the main server and the Celery workers, a message queue
+must be available to be used for communication between all these processes. By
+default, a Redis server running on localhost on the default port is assumed. If
+you want to use a different message queue, or a different configuration for
+Redis, then set the `CELERY_BROKER_URL` environment variable to the message
+queue connection URL. See the Celery documentation for information on
+connection URLs.
+
 ##  Usage
 
 That application allows multiple users to chat online. You can launch the
 application on your browser by typing `http://127.0.0.1:5000` on the address
 bar.
 
-Since authentication is not a topic in this class, I've decided to use a 
+Since authentication is not a topic in this class, I've decided to use a
 simplified flow that combines the registration and login forms in one. If you
 are a new user, enter your chosen nickname and password to register. If the
 nickname was not seen before the server will register you. If you are a
