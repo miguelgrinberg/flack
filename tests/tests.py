@@ -8,11 +8,19 @@ import requests
 
 from flack import create_app, db
 from flack.models import User
+from flack.tasks import async
 
 
 class FlackTests(unittest.TestCase):
     def setUp(self):
         self.app = create_app('testing')
+
+        # add an additional route used only in tests
+        @self.app.route('/foo')
+        @async
+        def foo():
+            1 / 0
+
         self.ctx = self.app.app_context()
         self.ctx.push()
         db.drop_all()  # just in case
@@ -252,28 +260,12 @@ class FlackTests(unittest.TestCase):
         # create a message
         r, s, h = self.post('/api/messages', data={'source': 'hello *world*!'},
                             token_auth=token)
-        self.assertEqual(s, 202)
-        url = h['Location']
-
-        # wait for asnychronous task to complete
-        while True:
-            r, s, h = self.get(url)
-            if s != 202:
-                break
         self.assertEqual(s, 201)
         url = h['Location']
 
         # create incomplete message
         r, s, h = self.post('/api/messages', data={'foo': 'hello *world*!'},
                             token_auth=token)
-        self.assertEqual(s, 202)
-        url2 = h['Location']
-
-        # wait for asynchronous task to complete
-        while True:
-            r, s, h = self.get(url2)
-            if s != 202:
-                break
         self.assertEqual(s, 400)
 
         # get message
@@ -285,14 +277,6 @@ class FlackTests(unittest.TestCase):
         # modify message
         r, s, h = self.put(url, data={'source': '*hello* world!'},
                            token_auth=token)
-        self.assertEqual(s, 202)
-        url2 = h['Location']
-
-        # wait for asynchronous task to complete
-        while True:
-            r, s, h = self.get(url2)
-            if s != 202:
-                break
         self.assertEqual(s, 204)
 
         # check modified message
@@ -307,14 +291,6 @@ class FlackTests(unittest.TestCase):
             r, s, h = self.post('/api/messages',
                                 data={'source': 'bye *world*!'},
                                 token_auth=token)
-            self.assertEqual(s, 202)
-            url2 = h['Location']
-
-            # wait for asynchronous task to complete
-            while True:
-                r, s, h = self.get(url2)
-                if s != 202:
-                    break
         self.assertEqual(s, 201)
 
         # get list of messages
@@ -343,14 +319,6 @@ class FlackTests(unittest.TestCase):
         # modify message from first user with second user's token
         r, s, h = self.put(url, data={'source': '*hello* world!'},
                            token_auth=token2)
-        self.assertEqual(s, 202)
-        url2 = h['Location']
-
-        # wait for asynchronous task to complete
-        while True:
-            r, s, h = self.get(url2)
-            if s != 202:
-                break
         self.assertEqual(s, 403)
 
         def responses():
@@ -381,14 +349,6 @@ class FlackTests(unittest.TestCase):
                 '/api/messages',
                 data={'source': 'hello http://foo.com!'},
                 token_auth=token)
-            self.assertEqual(s, 202)
-            url2 = h['Location']
-
-            # wait for asynchronous task to complete
-            while True:
-                r, s, h = self.get(url2)
-                if s != 202:
-                    break
             self.assertEqual(s, 201)
 
             self.assertEqual(
@@ -401,14 +361,6 @@ class FlackTests(unittest.TestCase):
                 '/api/messages',
                 data={'source': 'hello http://foo.com!'},
                 token_auth=token)
-            self.assertEqual(s, 202)
-            url2 = h['Location']
-
-            # wait for asynchronous task to complete
-            while True:
-                r, s, h = self.get(url2)
-                if s != 202:
-                    break
             self.assertEqual(s, 201)
 
             self.assertEqual(
@@ -421,14 +373,6 @@ class FlackTests(unittest.TestCase):
                 '/api/messages',
                 data={'source': 'hello foo.com!'},
                 token_auth=token)
-            self.assertEqual(s, 202)
-            url2 = h['Location']
-
-            # wait for asynchronous task to complete
-            while True:
-                r, s, h = self.get(url2)
-                if s != 202:
-                    break
             self.assertEqual(s, 201)
 
             self.assertEqual(
@@ -441,17 +385,63 @@ class FlackTests(unittest.TestCase):
                 '/api/messages',
                 data={'source': 'hello foo.com!'},
                 token_auth=token)
-            self.assertEqual(s, 202)
-            url2 = h['Location']
-
-            # wait for asynchronous task to complete
-            while True:
-                r, s, h = self.get(url2)
-                if s != 202:
-                    break
             self.assertEqual(s, 201)
 
             self.assertEqual(
                 r['html'],
                 'hello <a href="http://foo.com" rel="nofollow">'
                 'foo.com</a>!')
+
+    def test_celery(self):
+        # create a user and a token
+        r, s, h = self.post('/api/users', data={'nickname': 'foo',
+                                                'password': 'bar'})
+        self.assertEqual(s, 201)
+        r, s, h = self.post('/api/tokens', basic_auth='foo:bar')
+        self.assertEqual(s, 200)
+        token = r['token']
+
+        with mock.patch('flack.tasks.run_flask_request.apply_async',
+                        return_value=mock.MagicMock(state='PENDING')) as m:
+            r, s, h = self.post(
+                '/api/messages',
+                data={'source': 'hello!'},
+                token_auth=token)
+            self.assertEqual(s, 202)
+            self.assertEqual(m.call_count, 1)
+            environ = m.call_args_list[0][1]['args'][0]
+            self.assertEqual(environ['_wsgi.input'], b'{"source": "hello!"}')
+
+        with mock.patch('flack.tasks.run_flask_request.apply_async',
+                        return_value=mock.MagicMock(state='STARTED')) as m:
+            r, s, h = self.post(
+                '/api/messages',
+                data={'source': 'hello!'},
+                token_auth=token)
+            self.assertEqual(s, 202)
+            self.assertEqual(m.call_count, 1)
+            environ = m.call_args_list[0][1]['args'][0]
+            self.assertEqual(environ['_wsgi.input'], b'{"source": "hello!"}')
+
+        with mock.patch('flack.tasks.run_flask_request.apply_async',
+                        return_value=mock.MagicMock(
+                            state='SUCCESS',
+                            info=('foo', 201, {'a': 'b'}))) as m:
+            r, s, h = self.post(
+                '/api/messages',
+                data={'source': 'hello!'},
+                token_auth=token)
+            self.assertEqual(s, 201)
+            self.assertEqual(r, 'foo')
+            self.assertIn('a', h)
+            self.assertEqual(h['a'], 'b')
+            self.assertEqual(m.call_count, 1)
+            environ = m.call_args_list[0][1]['args'][0]
+            self.assertEqual(environ['_wsgi.input'], b'{"source": "hello!"}')
+
+        with mock.patch('flack.api.messages.jsonify', side_effect=ValueError):
+            r, s, h = self.post(
+                '/api/messages',
+                data={'source': 'hello!'},
+                token_auth=token)
+            self.assertEqual(s, 500)
