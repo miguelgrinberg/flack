@@ -4,6 +4,7 @@ import time
 from flask import Blueprint, render_template, jsonify, current_app
 
 from .models import User
+from .events import push_model
 from . import db, stats
 
 main = Blueprint('main', __name__)
@@ -15,7 +16,9 @@ def before_first_request():
     def find_offline_users(app):
         with app.app_context():
             while True:
-                User.find_offline_users()
+                users = User.find_offline_users()
+                for user in users:
+                    push_model(user)
                 db.session.remove()
                 time.sleep(5)
 

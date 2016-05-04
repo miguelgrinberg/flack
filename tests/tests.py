@@ -6,7 +6,7 @@ import mock
 
 import requests
 
-from flack import create_app, db
+from flack import create_app, db, socketio
 from flack.models import User
 from flack.tasks import async
 
@@ -445,3 +445,48 @@ class FlackTests(unittest.TestCase):
                 data={'source': 'hello!'},
                 token_auth=token)
             self.assertEqual(s, 500)
+
+    def test_socketio(self):
+        client = socketio.test_client(self.app)
+
+        # create a user and a token
+        r, s, h = self.post('/api/users', data={'nickname': 'foo',
+                                                'password': 'bar'})
+        self.assertEqual(s, 201)
+        r, s, h = self.post('/api/tokens', basic_auth='foo:bar')
+        self.assertEqual(s, 200)
+        token = r['token']
+
+        # clear old socket.io notifications
+        client.get_received()
+
+        # artificially make user be offline
+        user = User.query.filter_by(token=token).first()
+        user.online = False
+        db.session.add(user)
+        db.session.commit()
+
+        # ping user via socketio to make it be back online
+        client.emit('ping_user', token)
+        self.assertEqual(user.online, True)
+        recvd = client.get_received()
+        self.assertEqual(len(recvd), 1)
+        self.assertEqual(recvd[0]['args'][0]['class'], 'User')
+        self.assertEqual(recvd[0]['args'][0]['model']['nickname'], 'foo')
+        self.assertEqual(recvd[0]['args'][0]['model']['online'], True)
+
+        # post a message via socketio
+        client.emit('post_message', {'source': 'foo'}, token)
+        recvd = client.get_received()
+        self.assertEqual(len(recvd), 1)
+        self.assertEqual(recvd[0]['args'][0]['class'], 'Message')
+        self.assertEqual(recvd[0]['args'][0]['model']['source'], 'foo')
+        self.assertEqual(recvd[0]['args'][0]['model']['html'], 'foo')
+
+        # disconnect the user
+        client.disconnect()
+        recvd = client.get_received()
+        self.assertEqual(len(recvd), 1)
+        self.assertEqual(recvd[0]['args'][0]['class'], 'User')
+        self.assertEqual(recvd[0]['args'][0]['model']['nickname'], 'foo')
+        self.assertEqual(recvd[0]['args'][0]['model']['online'], False)

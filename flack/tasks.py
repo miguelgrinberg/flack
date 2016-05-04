@@ -23,7 +23,7 @@ tasks_bp = Blueprint('tasks', __name__)
 
 @celery.task
 def run_flask_request(environ):
-    from .wsgi import app
+    from .wsgi_aux import app
 
     if '_wsgi.input' in environ:
         environ['wsgi.input'] = BytesIO(environ['_wsgi.input'])
@@ -53,12 +53,15 @@ def async(f):
     """
     @wraps(f)
     def wrapped(*args, **kwargs):
-        # if we are already running the request on the celery side, then we
-        # just called the wrapped function to allow the request to execute
+        # If we are already running the request on the celery side, then we
+        # just call the wrapped function to allow the request to execute.
         if getattr(g, 'in_celery', False):
             return f(*args, **kwargs)
 
-        # launch the task
+        # If we are on the Flask side, we need to launch the Celery task,
+        # passing the request environment, which will be used to reconstruct
+        # the request object. The request body has to be handled as a special
+        # case, since WSGI requires it to be provided as a file-like object.
         environ = {k: v for k, v in request.environ.items()
                    if isinstance(v, text_types)}
         if 'wsgi.input' in request.environ:
@@ -66,12 +69,13 @@ def async(f):
         t = run_flask_request.apply_async(args=(environ,))
 
         # Return a 202 response, with a link that the client can use to
-        # obtain task status
+        # obtain task status that is based on the Celery task id.
         if t.state == states.PENDING or t.state == states.RECEIVED or \
                 t.state == states.STARTED:
             return '', 202, {'Location': url_for('tasks.get_status', id=t.id)}
 
-        # If the task already finished, return its return value as response
+        # If the task already finished, return its return value as response.
+        # This would be the case when CELERY_ALWAYS_EAGER is set to True.
         return t.info
     return wrapped
 

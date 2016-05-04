@@ -1,4 +1,4 @@
-from flask import g, jsonify
+from flask import g, jsonify, session
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 
 from . import db
@@ -20,7 +20,9 @@ def verify_password(nickname, password):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None or not user.verify_password(password):
         return False
-    user.ping()
+    if user.ping():
+        from .events import push_model
+        push_model(user)
     db.session.add(user)
     db.session.commit()
     g.current_user = user
@@ -36,15 +38,23 @@ def password_error():
 
 
 @token_auth.verify_token
-def verify_token(token):
+def verify_token(token, add_to_session=False):
     """Token verification callback."""
+    if add_to_session:
+        # clear the session in case auth fails
+        if 'nickname' in session:
+            del session['nickname']
     user = User.query.filter_by(token=token).first()
     if user is None:
         return False
-    user.ping()
+    if user.ping():
+        from .events import push_model
+        push_model(user)
     db.session.add(user)
     db.session.commit()
     g.current_user = user
+    if add_to_session:
+        session['nickname'] = user.nickname
     return True
 
 
