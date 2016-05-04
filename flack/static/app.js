@@ -13,18 +13,43 @@ $(function() {
     app.messageListView = new app.MessageListView({collection: app.messageList});
     app.loginFormView = new app.LoginFormView({model: app.token});
     app.postFormView = new app.PostFormView({model: app.token});
-    app.statsView = new app.StatsView();
 
-    // Set up auto-refresh for the user and message lists.
+    // Create the Socket.IO client that will update messages and users
+    app.socket = io.connect(location.protocol + '//' + location.hostname + ':' + location.port);
+    app.socket.on('updated_model', function(data) {
+        if (data['class'] == 'User') {
+            var user = new app.User();
+            user.set(data.model);
+            app.userListView.updateUser(user);
+        }
+        else if (data['class'] == 'Message') {
+            var msg = new app.Message();
+            msg.set(data.model);
+            app.messageListView.updateMessage(msg);
+        }
+    });
+
+    // While the user is logged in, periodically ping it on the server
+    app.token.on('change:token', function() {
+        // first clear the timer for the old token
+        if (app.tokenRefreshTimer) {
+            clearInterval(app.tokenRefreshTimer);
+            app.tokenRefreshTimer = null;
+        }
+
+        var token = app.token.get('token');
+        if (token) {
+            // ping the user every 30 seconds
+            app.socket.emit('ping_user', token);
+            app.tokenRefreshTimer = window.setInterval(function() {
+                app.socket.emit('ping_user', token);
+            }, 30000);
+        }
+    });
+
+    // Populate the initial message and user lists through the REST API
     app.userListView.refresh(function() {
-        app.messageListView.refresh(function() {
-            window.setInterval(function() {
-                app.userListView.refresh();
-            }, 1000);
-            window.setInterval(function() {
-                app.messageListView.refresh();
-            }, 1000);
-        });
+        app.messageListView.refresh();
     });
 
     // Render the form views.
@@ -45,14 +70,6 @@ $(function() {
         target.trigger('submit', values);
         return false;
     });
-
-    // Render the stats view
-    app.statsView.render();
-
-    // Auto-refresh stats view
-    window.setInterval(function() {
-        app.statsView.render();
-    }, 5000);
 
     // Set up authentication in Backbone.sync
     var _sync = Backbone.sync
