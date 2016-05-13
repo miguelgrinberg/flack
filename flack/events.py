@@ -1,6 +1,6 @@
 from flask import g, session
 
-from . import db, socketio
+from . import db, socketio, celery
 from .models import User, Message
 from .auth import verify_token
 
@@ -20,18 +20,39 @@ def on_ping_user(token):
         g.current_user.ping()
 
 
-@socketio.on('post_message')
-def on_post_message(data, token):
-    """Clients send this event to when the user posts a message."""
-    verify_token(token, add_to_session=True)
-    if g.current_user:
+@celery.task
+def post_message(user_id, data):
+    """Celery task that posts a message."""
+    from .wsgi_aux import app
+    with app.app_context():
+        user = User.query.get(user_id)
+        if user is None:
+            return
+
         # Write the message to the database
-        msg = Message.create(data)
+        msg = Message.create(data, user=user, expand_links=False)
         db.session.add(msg)
         db.session.commit()
 
         # broadcast the message to all clients
         push_model(msg)
+
+        if msg.expand_links():
+            db.session.commit()
+
+            # broadcast the message again, now with links expanded
+            push_model(msg)
+
+        # clean up the database session
+        db.session.remove()
+
+
+@socketio.on('post_message')
+def on_post_message(data, token):
+    """Clients send this event to when the user posts a message."""
+    verify_token(token, add_to_session=True)
+    if g.current_user:
+        post_message.apply_async(args=(g.current_user.id, data))
 
 
 @socketio.on('disconnect')
