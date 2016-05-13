@@ -104,12 +104,14 @@ class Message(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     @staticmethod
-    def create(data, user=None):
+    def create(data, user=None, expand_links=True):
         """Create a new message. The user is obtained from the context unless
         provided explicitly.
         """
         msg = Message(user=user or g.current_user)
         msg.from_dict(data, partial_update=False)
+        if expand_links:
+            msg.expand_links()
         return msg
 
     def from_dict(self, data, partial_update=True):
@@ -179,6 +181,5 @@ class Message(db.Model):
     def on_changed_source(target, value, oldvalue, initiator):
         """SQLAlchemy event that automatically renders the message to HTML."""
         target.render_markdown(value)
-        target.expand_links()
 
 db.event.listen(Message.source, 'set', Message.on_changed_source)
