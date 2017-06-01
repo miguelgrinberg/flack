@@ -37,6 +37,6 @@ redis==2.10.5
 requests==2.9.1
 six==1.10.0
 SQLAlchemy==1.0.12
-WSGI==2.0.13
+uWSGI==2.0.13
 visitor==0.1.2
 Werkzeug==0.11.5
