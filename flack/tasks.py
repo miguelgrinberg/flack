@@ -46,7 +46,7 @@ def run_flask_request(environ):
         return (rv.get_data(), rv.status_code, rv.headers)
 
 
-def async(f):
+def async_task(f):
     """
     This decorator transforms a sync route to asynchronous by running it
     in a background thread.

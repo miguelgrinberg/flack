@@ -4,13 +4,13 @@ from .. import db
 from ..auth import token_auth, token_optional_auth
 from ..models import Message
 from ..utils import timestamp, url_for
-from ..tasks import async
+from ..tasks import async_task
 from . import api
 
 
 @api.route('/messages', methods=['POST'])
 @token_auth.login_required
-@async
+@async_task
 def new_message():
     """
     Post a new message.
@@ -56,7 +56,7 @@ def get_message(id):
 
 @api.route('/messages/<id>', methods=['PUT'])
 @token_auth.login_required
-@async
+@async_task
 def edit_message(id):
     """
     Modify an existing message.
