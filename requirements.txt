@@ -22,7 +22,7 @@ gunicorn==19.4.5
 html5lib==0.9999999
 httpie==0.9.3
 itsdangerous==0.24
-Jinja2==2.10.1
+Jinja2==2.11.3
 kombu==4.6.3
 Markdown==2.6.6
 MarkupSafe==0.23
