@@ -3,7 +3,7 @@ anyjson==0.3.3
 beautifulsoup4==4.4.1
 billiard==3.6.0.0
 bleach==1.4.2
-celery==4.3.0
+celery==5.2.2
 Click==7.0
 coverage==4.0.3
 dominate==2.2.0
