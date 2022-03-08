@@ -20,7 +20,7 @@ gevent==1.4.0
 greenlet==0.4.15
 gunicorn==19.4.5
 html5lib==0.9999999
-httpie==0.9.3
+httpie==3.1.0
 itsdangerous==0.24
 Jinja2==2.10.1
 kombu==4.6.3
